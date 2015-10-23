@@ -6,10 +6,21 @@ myAppModule.config(function($stateProvider, $locationProvider) {
         requireBase: false
     });
     
-    $stateProvider.state('album', {
-        url: '/album',
-        controller: 'Album.controller',
-        templateUrl: '/templates/album.html'
-    });
+    $stateProvider
+        .state('landing', {
+            url: '/landing',
+            controller: 'Landing.controller',
+            templateUrl: '/templates/landing.html'
+        })
+        .state('collection', {
+            url: '/collection',
+            controller: 'Collection.controller',
+            templateUrl: '/templates/collection.html'
+        })
+        .state('album', {
+            url: '/album',
+            controller: 'Album.controller',
+            templateUrl: '/templates/album.html'
+        });
     
 });
