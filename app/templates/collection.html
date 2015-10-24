@@ -1,4 +1,18 @@
-<section class="album-covers contanier clearfix"></section>
+<section class="album-covers container clearfix" ng-controller="CollectionController">
+    <div class="collection-album-container column fourth" ng-repeat="albumArtUrl in albumPicasso">
+        <img ng-src="{{ albumPicasso.albumArtUrl }}" />
+        <div class="collection-album-info caption">
+            <p>
+                <a class="album-name" ui-sref="album">{{ albumPicasso.name }}</a>
+                <br/>
+                <a ui-sref="album">{{ albumPicasso.artist }}</a>
+                <br/>
+                {{ albumPicasso.songs.length }}
+                <br/>
+            </p>
+        </div>
+    </div>
+</section>
     
 <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 <script src="scripts/collection.js"></script>

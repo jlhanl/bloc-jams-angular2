@@ -9,18 +9,46 @@ myAppModule.config(function($stateProvider, $locationProvider) {
     $stateProvider
         .state('landing', {
             url: '/landing',
-            controller: 'Landing.controller',
+            controller: 'LandingController',
             templateUrl: '/templates/landing.html'
         })
         .state('collection', {
             url: '/collection',
-            controller: 'Collection.controller',
+            controller: 'CollectionController',
             templateUrl: '/templates/collection.html'
         })
         .state('album', {
             url: '/album',
-            controller: 'Album.controller',
+            controller: 'AlbumController',
             templateUrl: '/templates/album.html'
         });
     
 });
+
+myAppModule.controller('LandingController', ['$scope', function($scope) {
+    $scope.someText = "Turn the music up!";
+}]);
+
+myAppModule.controller('CollectionController', ['$scope', function($scope) {
+    $scope.albumPicasso = {
+        name: 'The Colors',
+        artist: 'Pablo Picasso',
+        label: 'Cubism',
+        year: '1881',
+        albumArtUrl: '/assets/images/album_covers/01.png',
+        songs: [
+            {name:'Blue', length: '161.71', audioUrl: 'assets/music/blue' },
+            {name:'Green', length: '103.96', audioUrl: 'assets/music/green' },
+            {name:'Red', length: '268.45', audioUrl: 'assets/music/red' },
+            {name:'Pink', length: '153.14', audioUrl: 'assets/music/pink' },
+            {name:'Magenta', length: '374.22', audioUrl: 'assets/music/magenta' }
+        ]
+    };
+    
+    $scope.copyPicasso = function() {
+        angular.copy($scope.albumPicasso);
+    };
+}]);
+    
+myAppModule.controller('AlbumController', [function(){}]);
+    
