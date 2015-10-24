@@ -1,4 +1,4 @@
-<section class="album-covers contanier clearfix"></section>
-    
-<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<section class="album-covers contanier clearfix" ng-repeat="albumURL in albums.albumURL"><img ng-src="{{ albums.albumArtUrl }}">
+</section>
+<script src="https://code.jquery.com/jquery-2.1.3.js"></script>
 <script src="scripts/collection.js"></script>
