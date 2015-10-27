@@ -1,17 +1,17 @@
 <main class="album-view container narrow" ng-controller="AlbumController">
   <section class="clearfix">
     <div class="column half">
-      <img ng-src="{{ albumPicasso.albumArtUrl }}" class="album-cover-art">
+      <img ng-src="{{ currentAlbum.albumArtUrl }}" class="album-cover-art">
     </div>
     <div class="album-view-details column half">
-      <h2 class="album-view-title">{{ albumPicasso.name }}</h2>
-      <h3 class="album-view-artist">{{ albumPicasso.artist }}</h3>
-      <h5 class="album-view-release-info">{{ albumPicasso.year + ' ' + albumPicasso.label }}</h5>
+      <h2 class="album-view-title">{{ currentAlbum.name }}</h2>
+      <h3 class="album-view-artist">{{ currentAlbum.artist }}</h3>
+      <h5 class="album-view-release-info">{{ currentAlbum.year + ' ' + currentAlbum.label }}</h5>
     </div>
   </section>
 
   <table class="album-view-song-list">
-      <tr class="album-view-song-item" ng-repeat="song in albumPicasso.songs">
+      <tr class="album-view-song-item" ng-repeat="song in currentAlbum.songs">
           <td class="song-item-number">{{ $index + 1 }}</td>
           <td class="song-item-title">{{ song.name }}</td>
           <td class="song-item-duration">{{ song.length | date:'mm:ss' }}</td>
@@ -26,7 +26,7 @@
       <a class = "previous">
         <span class = "ion-skip-backward"></span>
       </a>
-      <a class = "play-pause">
+      <a class = "play-pause" ng-click="playSong()">
         <span class = "ion-play"></span>
       </a>
       <a class = "next">

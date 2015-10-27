@@ -30,41 +30,74 @@ myAppModule.controller('LandingController', ['$scope', function($scope) {
 }]);
 
 myAppModule.controller('CollectionController', ['$scope', function($scope) {
-    $scope.albumPicasso = {
-        name: 'The Colors',
-        artist: 'Pablo Picasso',
-        label: 'Cubism',
-        year: '1881',
-        albumArtUrl: '/assets/images/album_covers/01.png',
-        songs: [
-            {name:'Blue', length: '161.71', audioUrl: 'assets/music/blue' },
-            {name:'Green', length: '103.96', audioUrl: 'assets/music/green' },
-            {name:'Red', length: '268.45', audioUrl: 'assets/music/red' },
-            {name:'Pink', length: '153.14', audioUrl: 'assets/music/pink' },
-            {name:'Magenta', length: '374.22', audioUrl: 'assets/music/magenta' }
-        ]
-    };
+    $scope.albums = [albumPicasso, albumMarconi];
     
     $scope.copyPicasso = function() {
-        angular.copy($scope.albumPicasso);
-    };
-}]);
-    
-myAppModule.controller('AlbumController', ['$scope', function($scope) {
-    $scope.albumPicasso = {
-        name: 'The Colors',
-        artist: 'Pablo Picasso',
-        label: 'Cubism',
-        year: '1881',
-        albumArtUrl: '/assets/images/album_covers/01.png',
-        songs: [
-            {name:'Blue', length: '161.71', audioUrl: 'assets/music/blue' },
-            {name:'Green', length: '103.96', audioUrl: 'assets/music/green' },
-            {name:'Red', length: '268.45', audioUrl: 'assets/music/red' },
-            {name:'Pink', length: '153.14', audioUrl: 'assets/music/pink' },
-            {name:'Magenta', length: '374.22', audioUrl: 'assets/music/magenta' }
-        ]
+        angular.copy($scope.albums[0]);
     };
     
+    $scope.copyPicasso;
+
 }]);
     
+myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
+    $scope.currentAlbum = SongPlayer.currentAlbum;
+    $scope.currentSoundFile = SongPlayer.currentSoundFile;
+    $scope.currentlyPlayingSongNumber = SongPlayer.currentlyPlayingSongNumber;
+    $scope.currentSongFromAlbum = SongPlayer.currentSongFromAlbum;
+    $scope.playSong = function(song) {
+        SongPlayer.play();
+    };
+     
+}]);
+    
+myAppModule.service('SongPlayer', function() {
+    return {
+        currentAlbum: albumPicasso,
+        currentSoundFile: null,
+        currentlyPlayingSongNumber: null,
+        currentSongFromAlbum: 0,
+        currentVolume: 80,
+        trackIndex: function(currentAlbum, song) {
+            return currentAlbum.songs.indexOf(song);
+        },
+        setSong: function(songNumber) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.stop();
+            }
+            currentlyPlayingSongNumber = songNumber;
+            currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+            currentSoundFile = new buzz.sound(currentSongFromAlbum.audioUrl, {
+                formats: [ 'mp3' ],
+                preload: true
+            });
+            setVolume(currentVolume);
+        },
+        play: function() {
+            this.playing = true;
+            currentSoundFile.play();
+        },
+        pause: function() {
+            this.playing = false;
+            currentSoundFile.pause();
+        },
+        previousTrack: function() {
+            var currentSongIndex = trackIndex(currentAlbum, currentSongFromAlbum);
+            this.currentSongIndex -= 1;
+            if (this.currentSongIndex === 0) {
+                currentSongIndex == this.currentAlbum.songs.length - 1;
+            }
+            this.setSong(currentSongIndex += 1);
+            currentSoundFile.play();
+        },
+        nextTrack: function() {
+            this.currentSongIndex += 1;
+            if (this.currentSongIndex == this.currentAlbum.songs.length + 1) {
+                currentSongIndex === 0;
+            }
+            this.setSong(currentSongIndex);
+            currentSoundFile.play();
+        }
+        
+    };
+});
