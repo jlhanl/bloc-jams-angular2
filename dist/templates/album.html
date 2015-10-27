@@ -23,13 +23,13 @@
 <section class = "player-bar">
   <div class = "container">
     <div class = "control-group main-controls">
-      <a class = "previous">
+      <a class = "previous" ng-click="previousSong()">
         <span class = "ion-skip-backward"></span>
       </a>
-      <a class = "play-pause">
+      <a class = "play-pause" ng-click="pauseSong()">
         <span class = "ion-play"></span>
       </a>
-      <a class = "next">
+      <a class = "next" ng-click="nextSong()">
         <span class = "ion-skip-forward"></span>
       </a>
     </div>

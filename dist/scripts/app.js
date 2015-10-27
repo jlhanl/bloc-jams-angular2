@@ -30,41 +30,42 @@ myAppModule.controller('LandingController', ['$scope', function($scope) {
 }]);
 
 myAppModule.controller('CollectionController', ['$scope', function($scope) {
-    $scope.albumPicasso = {
-        name: 'The Colors',
-        artist: 'Pablo Picasso',
-        label: 'Cubism',
-        year: '1881',
-        albumArtUrl: '/assets/images/album_covers/01.png',
-        songs: [
-            {name:'Blue', length: '161.71', audioUrl: 'assets/music/blue' },
-            {name:'Green', length: '103.96', audioUrl: 'assets/music/green' },
-            {name:'Red', length: '268.45', audioUrl: 'assets/music/red' },
-            {name:'Pink', length: '153.14', audioUrl: 'assets/music/pink' },
-            {name:'Magenta', length: '374.22', audioUrl: 'assets/music/magenta' }
-        ]
-    };
+    $scope.albums = [albumPicasso, albumMarconi];
     
     $scope.copyPicasso = function() {
-        angular.copy($scope.albumPicasso);
+        angular.copy(albumPicasso);
     };
 }]);
     
-myAppModule.controller('AlbumController', ['$scope', function($scope) {
-    $scope.albumPicasso = {
-        name: 'The Colors',
-        artist: 'Pablo Picasso',
-        label: 'Cubism',
-        year: '1881',
-        albumArtUrl: '/assets/images/album_covers/01.png',
-        songs: [
-            {name:'Blue', length: '161.71', audioUrl: 'assets/music/blue' },
-            {name:'Green', length: '103.96', audioUrl: 'assets/music/green' },
-            {name:'Red', length: '268.45', audioUrl: 'assets/music/red' },
-            {name:'Pink', length: '153.14', audioUrl: 'assets/music/pink' },
-            {name:'Magenta', length: '374.22', audioUrl: 'assets/music/magenta' }
-        ]
+myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
+    $scope.currentAlbum;
+    $scope.pauseSong = function(song) {
+        SongPlayer.pause();
     };
     
 }]);
     
+/**myAppModule.service('SongPlayer', function SongPlayer() {
+    return {
+        currentSoundFile: null,
+        currentAlbum: albumPicasso,
+        currentlyPlayingSongNumber: null,
+        currentSongFromAlbum: null,
+        currentVolume: 80,
+        
+        play: function() {
+            this.playing = true;
+            currentSoundFile.play();
+        },
+        pause: function() {
+            this.playing = false;
+            currentSoundFile.pause();
+        },
+        previousTrack: function() {
+            currentSongFromAlbum -= 1;
+        },
+        nextTrack: function() {
+            currentSongFromAlbum += 1;
+ //       
+
+
