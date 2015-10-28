@@ -26,8 +26,9 @@
       <a class = "previous">
         <span class = "ion-skip-backward"></span>
       </a>
-      <a class = "play-pause" ng-click="playSong()">
-        <span class = "ion-play"></span>
+      <a class = "play-pause" ng-click="playSong">
+        <span class = "ion-play" ng-show="isPlaying"></span>
+        <span class = "ion-pause" ng-show="!isPlaying"></span>
       </a>
       <a class = "next">
         <span class = "ion-skip-forward"></span>
