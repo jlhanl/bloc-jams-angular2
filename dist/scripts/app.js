@@ -42,70 +42,32 @@ myAppModule.controller('CollectionController', ['$scope', function($scope) {
     
 myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
     $scope.currentAlbum = SongPlayer.currentAlbum;
-    $scope.isPlaying = SongPlayer.isPlaying;
-    $scope.playSong = function(song) {
-        SongPlayer.play();
+    $scope.currentSoundFile = SongPlayer.currentSoundFile;
+    $scope.currentSongIndex = SongPlayer.currentSongIndex;
+    $scope.playSong = function() {
+        SongPlayer.playSong();
     };
-    $scope.pauseSong = SongPlayer.pause;
-    $scope.setSong = SongPlayer.setSong;
      
 }]);
     
 myAppModule.service('SongPlayer', function() {
     return {
         currentAlbum: albumPicasso,
-        currentSongIndex: 0,
         currentSoundFile: null,
-        currentSongFromAlbum: null,
+        currentSongIndex: albumPicasso.songs[0],
         currentVolume: 80,
-        trackIndex: function(currentAlbum, song) {
-            return this.currentAlbum.songs.indexOf(song);
-        },
-        play: function() {
-            this.playing = true;
-            this.paused = false;
-            this.currentSoundFile.play();
-        },
-        pause: function() {
-            this.playing = false;
-            this.paused = true;
-            this.currentSoundFile.pause();
-        },
-        setSong: function(songIndex) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.stop();
-            }
-            this.currentSongIndex = songIndex;
-            this.currentSoundFile = new buzz.sound(albumPicasso.songs[songIndex].audioUrl, {
+        setSong: function() {
+            this.currentSoundFile = new buzz.sound(this.currentSongIndex.audioUrl, {
                 formats: [ 'mp3' ],
                 preload: true
             });
             this.setVolume(this.currentVolume);
         },
-        isPlaying: function() {
-            if (this.currentSongIndex === songIndex && this.paused === false) {
-                this.playing = true;
-            } else 
-                this.playing = false;
-        },
-        
-
-        previousTrack: function() {
-            this.currentSongIndex -= 1;
-            if (this.currentSongIndex === 0) {
-                this.currentSongIndex = this.currentAlbum.songs.length - 1;
-            }
-            this.setSong(this.currentSongIndex);
+        playSong: function() {
+            this.setSong();
             this.currentSoundFile.play();
-        },
-        nextTrack: function() {
-            this.currentSongIndex += 1;
-            if (this.currentSongIndex === this.currentAlbum.songs.length) {
-                this.currentSongIndex === 0;
-            }
-            this.setSong(currentSongIndex);
-            this.currentSoundFile.play();
+            this.playing = true;
+            this.paused = false;
         }
-        
     };
 });
