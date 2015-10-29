@@ -43,8 +43,11 @@ myAppModule.controller('CollectionController', ['$scope', function($scope) {
 myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
     $scope.currentAlbum = SongPlayer.currentAlbum;
     $scope.isPlaying = SongPlayer.isPlaying;
-    $scope.playSong = SongPlayer.play;
+    $scope.playSong = function(song) {
+        SongPlayer.play();
+    };
     $scope.pauseSong = SongPlayer.pause;
+    $scope.setSong = SongPlayer.setSong;
      
 }]);
     
@@ -58,34 +61,35 @@ myAppModule.service('SongPlayer', function() {
         trackIndex: function(currentAlbum, song) {
             return this.currentAlbum.songs.indexOf(song);
         },
+        play: function() {
+            this.playing = true;
+            this.paused = false;
+            this.currentSoundFile.play();
+        },
+        pause: function() {
+            this.playing = false;
+            this.paused = true;
+            this.currentSoundFile.pause();
+        },
         setSong: function(songIndex) {
-            if (currentSoundFile) {
-                currentSoundFile.stop();
+            if (this.currentSoundFile) {
+                this.currentSoundFile.stop();
             }
             this.currentSongIndex = songIndex;
-            this.currentSoundFile = new buzz.sound(currentAlbum.songs[songIndex].audioUrl, {
+            this.currentSoundFile = new buzz.sound(albumPicasso.songs[songIndex].audioUrl, {
                 formats: [ 'mp3' ],
                 preload: true
             });
-            this.setVolume(currentVolume);
+            this.setVolume(this.currentVolume);
         },
-        isPlaying: function(songIndex) {
-            if (this.playing = true) {
-                return true;
+        isPlaying: function() {
+            if (this.currentSongIndex === songIndex && this.paused === false) {
+                this.playing = true;
             } else 
-                return false;
+                this.playing = false;
         },
-        play: function() {
-            this.setSong;
-            this.playing = true;
-            this.paused = false;
-            this.currentSoundFile.playing();
-        },
-        pause: function() {
-            this.currentSoundFile.pause();
-            this.playing = false;
-            this.paused = true;
-        },
+        
+
         previousTrack: function() {
             this.currentSongIndex -= 1;
             if (this.currentSongIndex === 0) {
