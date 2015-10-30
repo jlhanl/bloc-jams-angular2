@@ -1,63 +1,74 @@
-<main class="album-view container narrow" ng-controller="AlbumController">
-  <section class="clearfix">
-    <div class="column half">
-      <img ng-src="{{ currentAlbum.albumArtUrl }}" class="album-cover-art">
-    </div>
-    <div class="album-view-details column half">
-      <h2 class="album-view-title">{{ currentAlbum.name }}</h2>
-      <h3 class="album-view-artist">{{ currentAlbum.artist }}</h3>
-      <h5 class="album-view-release-info">{{ currentAlbum.year + ' ' + currentAlbum.label }}</h5>
-    </div>
-  </section>
-
-  <table class="album-view-song-list">
-      <tr class="album-view-song-item" ng-repeat="song in currentAlbum.songs">
-          <td class="song-item-number">{{ $index + 1 }}</td>
-          <td class="song-item-title">{{ song.name }}</td>
-          <td class="song-item-duration">{{ song.length | date:'mm:ss' }}</td>
-      </tr>
-
-  </table>
-</main>
-
-<section class = "player-bar">
-  <div class = "container">
-    <div class = "control-group main-controls">
-      <a class = "previous">
-        <span class = "ion-skip-backward"></span>
-      </a>
-      <a class = "play-pause" ng-click="playSong">
-        <span class = "ion-play" ng-show="isPlaying"></span>
-        <span class = "ion-pause" ng-show="!isPlaying"></span>
-      </a>
-      <a class = "next">
-        <span class = "ion-skip-forward"></span>
-      </a>
-    </div>
-    <div class = "control-group currently-playing">
-      <h2 class = "song-name"></h2>
-      <h2 class = "artist-song-mobile"></h2>
-      <h3 class = "artist-name"></h3>
-      <div class = "seek-control">
-        <div class = "seek-bar">
-          <div class = "fill"></div>
-          <div class = "thumb"></div>
+<div ng-controller="AlbumController">
+    <main class="album-view container narrow">
+      <section class="clearfix">
+        <div class="column half">
+          <img ng-src="{{ currentAlbum.albumArtUrl }}" class="album-cover-art">
         </div>
-        <div class = "current-time"></div>
-        <div class = "total-time"></div>
-      </div>
-    </div>
-    <div class = "control-group volume">
-      <span class = "icont ion-volume-high icon"</span>
-      <div class = "seek-bar">
-        <div class = "fill"></div>
-        <div class = "thumb"></div>
-      </div>
-    </div>
-  </div>
-</section>
+        <div class="album-view-details column half">
+          <h2 class="album-view-title">{{ currentAlbum.name }}</h2>
+          <h3 class="album-view-artist">{{ currentAlbum.artist }}</h3>
+          <h5 class="album-view-release-info">{{ currentAlbum.year + ' ' + currentAlbum.label }}</h5>
+        </div>
+      </section>
 
-<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/buzz/1.1.10/buzz.min.js"></script>
-<script src="scripts/fixtures.js"></script>
-<script src="scripts/album.js"></script>
+      <table class="album-view-song-list">
+          <tr class="album-view-song-item" ng-mouseenter="onHover($index)" ng-mouseleave="offHover()" ng-repeat="song in currentAlbum.songs">
+              <td class="song-item-number">
+                  <span ng-switch="playPause($index)">
+                      <div ng-switch-when="notplaying">
+                        <a class="album-song-button"><span class="ion-play"></span></a>
+                      </div>
+                      <div ng-switch-when="playing">
+                        <a class="album-song-button"><span class="ion-pause"></span></a>
+                      </div>
+                      <span ng-switch-default="">
+                          {{ $index+1 }}
+                      </span>
+                  </span>       
+              </td>
+              <td class="song-item-title">{{ song.name }}</td>
+              <td class="song-item-duration">{{ song.length | date:'mm:ss' }}</td>
+          </tr>
+
+      </table>
+    </main>
+
+    <section class = "player-bar">
+      <div class = "container">
+        <div class = "control-group main-controls">
+          <a class = "previous">
+            <span class = "ion-skip-backward"></span>
+          </a>
+          <a class = "play-pause" ng-click="playSong()">
+            <span class = "ion-play" ng-show="!isPlaying"></span>
+            <span class = "ion-pause" ng-show="isPlaying"></span>
+          </a>
+          <a class = "next">
+            <span class = "ion-skip-forward"></span>
+          </a>
+        </div>
+        <div class = "control-group currently-playing">
+          <h2 class = "song-name"></h2>
+          <h2 class = "artist-song-mobile"></h2>
+          <h3 class = "artist-name"></h3>
+          <div class = "seek-control">
+            <div class = "seek-bar">
+              <div class = "fill"></div>
+              <div class = "thumb"></div>
+            </div>
+            <div class = "current-time"></div>
+            <div class = "total-time"></div>
+          </div>
+        </div>
+        <div class = "control-group volume">
+          <span class = "icon ion-volume-high"</span>
+          <div class = "seek-bar">
+            <div class = "fill"></div>
+            <div class = "thumb"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script src="scripts/fixtures.js"></script>
+</div>

@@ -42,69 +42,106 @@ myAppModule.controller('CollectionController', ['$scope', function($scope) {
     
 myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
     $scope.currentAlbum = SongPlayer.currentAlbum;
-    $scope.isPlaying = SongPlayer.isPlaying;
-    $scope.playSong = function(song) {
-        SongPlayer.play();
+    $scope.currentSongIndex = SongPlayer.currentSongIndex;
+    $scope.currentSoundFile = SongPlayer.currentSoundFile;
+    $scope.isPlaying = SongPlayer.playing;
+    $scope.playSong = function() {
+            SongPlayer.play();
     };
-    $scope.pauseSong = SongPlayer.pause;
-    $scope.setSong = SongPlayer.setSong;
-     
+    
+    var hoveredSongIndex = null;
+    
+    $scope.onHover = function(songIndex) {
+        hoveredSongIndex = songIndex;
+    };
+        
+    $scope.offHover = function() {
+        hoveredSongIndex = null;
+    };
+    
+    $scope.playPause = function(songIndex) {
+        if (songIndex === SongPlayer.currentSongIndex && SongPlayer.playing) {
+            return 'playing';
+        } else if (songIndex === hoveredSongIndex || songIndex === SongPlayer.currentSongIndex) {
+            return 'notplaying';
+        }
+    };
+    
+    $scope.playPause = function(songIndex) {
+        SongPlayer.isPlaying(songIndex);
+        if (songIndex !== SongPlayer.currentSongIndex) {
+            SongPlayer.setSong(songIndex);
+        }
+        if (SongPlayer.playing) {
+            SongPlayer.pause();
+        } else {
+            SongPlayer.play();
+        }
+    };
 }]);
     
 myAppModule.service('SongPlayer', function() {
     return {
         currentAlbum: albumPicasso,
-        currentSongIndex: 0,
+        currentSongIndex: 1,
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        trackIndex: function(currentAlbum, song) {
-            return this.currentAlbum.songs.indexOf(song);
-        },
+        /*testPlay: function() {
+            this.currentSoundFile = new buzz.sound("http://localhost:3000/assets/music/blue", {
+                formats: [ 'mp3' ],
+                preload: true
+            });
+            this.currentSoundFile.play();
+            this.setVolume(this.currentVolume);
+        },    */
         play: function() {
+            this.setSong();
             this.playing = true;
             this.paused = false;
             this.currentSoundFile.play();
-        },
-        pause: function() {
-            this.playing = false;
-            this.paused = true;
-            this.currentSoundFile.pause();
         },
         setSong: function(songIndex) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
             }
             this.currentSongIndex = songIndex;
-            this.currentSoundFile = new buzz.sound(albumPicasso.songs[songIndex].audioUrl, {
+            this.currentSoundFile = new buzz.sound(this.currentAlbum.songs[songIndex].audioUrl, {
                 formats: [ 'mp3' ],
                 preload: true
             });
             this.setVolume(this.currentVolume);
         },
-        isPlaying: function() {
-            if (this.currentSongIndex === songIndex && this.paused === false) {
-                this.playing = true;
-            } else 
-                this.playing = false;
+        setVolume: function(volume) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.setVolume(volume);
+            }
         },
-        
 
+        isPlaying: function() {
+            this.playing = true;
+            this.paused = false;
+        },
+        pause: function() {
+            this.playing = false;
+            this.paused = true;
+            this.currentSoundFile.pause();
+        },
         previousTrack: function() {
             this.currentSongIndex -= 1;
             if (this.currentSongIndex === 0) {
                 this.currentSongIndex = this.currentAlbum.songs.length - 1;
             }
             this.setSong(this.currentSongIndex);
-            this.currentSoundFile.play();
+            this.play();
         },
         nextTrack: function() {
             this.currentSongIndex += 1;
             if (this.currentSongIndex === this.currentAlbum.songs.length) {
                 this.currentSongIndex === 0;
             }
-            this.setSong(currentSongIndex);
-            this.currentSoundFile.play();
+            this.setSong(this.currentSongIndex);
+            this.play();
         }
         
     };
