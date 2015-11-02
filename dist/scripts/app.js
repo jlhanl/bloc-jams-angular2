@@ -46,7 +46,15 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
     $scope.playSong = function() {
-            SongPlayer.play();
+        SongPlayer.testPlay();
+    };
+    
+    $scope.previousSong = function() {
+        SongPlayer.previousTrack();
+    };
+    
+    $scope.nextSong = function() {
+        SongPlayer.nextTrack();
     };
     
     var hoveredSongIndex = null;
@@ -87,16 +95,16 @@ myAppModule.service('SongPlayer', function() {
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        /*testPlay: function() {
+        testPlay: function() {
             this.currentSoundFile = new buzz.sound("http://localhost:3000/assets/music/blue", {
                 formats: [ 'mp3' ],
                 preload: true
             });
             this.currentSoundFile.play();
             this.setVolume(this.currentVolume);
-        },    */
+        },    
         play: function() {
-            this.setSong();
+            this.setSong(1);
             this.playing = true;
             this.paused = false;
             this.currentSoundFile.play();
@@ -106,10 +114,17 @@ myAppModule.service('SongPlayer', function() {
                 this.currentSoundFile.stop();
             }
             this.currentSongIndex = songIndex;
-            this.currentSoundFile = new buzz.sound(this.currentAlbum.songs[songIndex].audioUrl, {
+            this.currentSoundFile = new
+            buzz.sound("http://localhost:3000/assets/music/blue", {
                 formats: [ 'mp3' ],
                 preload: true
             });
+            /*
+            buzz.sound(this.currentAlbum.songs[songIndex].audioUrl, {
+                formats: [ 'mp3' ],
+                preload: true
+            });
+            */
             this.setVolume(this.currentVolume);
         },
         setVolume: function(volume) {
