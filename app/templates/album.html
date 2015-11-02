@@ -36,14 +36,14 @@
     <section class = "player-bar">
       <div class = "container">
         <div class = "control-group main-controls">
-          <a class = "previous" ng-click="playSong()">
+          <a class = "previous" ng-click="previousSong()">
             <span class = "ion-skip-backward"></span>
           </a>
-          <a class = "play-pause" ng-click="playSong()">
-            <span class = "ion-play" ng-show="!isPlaying"></span>
-            <span class = "ion-pause" ng-show="isPlaying"></span>
+          <a class = "play-pause">
+            <span class = "ion-play" ng-click="playSong()" ng-show="!isPlaying()"></span>
+            <span class = "ion-pause" ng-click="pauseSong()" ng-show="isPlaying()"></span>
           </a>
-          <a class = "next" ng-click="playSong()">
+          <a class = "next" ng-click="nextSong()">
             <span class = "ion-skip-forward"></span>
           </a>
         </div>

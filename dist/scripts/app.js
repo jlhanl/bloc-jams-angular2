@@ -44,9 +44,15 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentAlbum = SongPlayer.currentAlbum;
     $scope.currentSongIndex = SongPlayer.currentSongIndex;
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
-    $scope.isPlaying = SongPlayer.playing;
+    $scope.isPlaying = function() {
+        SongPlayer.isPlaying();
+    };
     $scope.playSong = function() {
-        SongPlayer.testPlay();
+        SongPlayer.play();
+    };
+    
+    $scope.pauseSong = function() {
+        SongPlayer.pause();
     };
     
     $scope.previousSong = function() {
@@ -62,11 +68,11 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.onHover = function(songIndex) {
         hoveredSongIndex = songIndex;
     };
-        
+      
     $scope.offHover = function() {
         hoveredSongIndex = null;
     };
-    
+    /*
     $scope.playPause = function(songIndex) {
         if (songIndex === SongPlayer.currentSongIndex && SongPlayer.playing) {
             return 'playing';
@@ -74,7 +80,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
             return 'notplaying';
         }
     };
-    
+    /*
     $scope.playPause = function(songIndex) {
         SongPlayer.isPlaying(songIndex);
         if (songIndex !== SongPlayer.currentSongIndex) {
@@ -85,7 +91,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         } else {
             SongPlayer.play();
         }
-    };
+    };*/
 }]);
     
 myAppModule.service('SongPlayer', function() {
@@ -104,7 +110,7 @@ myAppModule.service('SongPlayer', function() {
             this.setVolume(this.currentVolume);
         },    
         play: function() {
-            this.setSong(1);
+            this.setSong();
             this.playing = true;
             this.paused = false;
             this.currentSoundFile.play();
@@ -132,15 +138,14 @@ myAppModule.service('SongPlayer', function() {
                 this.currentSoundFile.setVolume(volume);
             }
         },
-
-        isPlaying: function() {
-            this.playing = true;
-            this.paused = false;
-        },
         pause: function() {
             this.playing = false;
             this.paused = true;
             this.currentSoundFile.pause();
+        },
+        isPlaying: function() {
+            this.playing = true;
+            this.paused = false;
         },
         previousTrack: function() {
             this.currentSongIndex -= 1;
