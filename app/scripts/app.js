@@ -45,6 +45,9 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongIndex = SongPlayer.currentSongIndex;
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
+    SongPlayer.trackTime();
+    $scope.currentSongTime = SongPlayer.currentSongTime;
+    $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
     
     $scope.isPaused = SongPlayer.isPaused;
     
@@ -60,8 +63,6 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.pauseSong = function() {
         SongPlayer.pause();
     };
-    
-    
     
     $scope.previousSong = function() {
         SongPlayer.previousTrack();
@@ -103,7 +104,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         }
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
-        $scope.currentArtistName = SongPlayer.currentArtistName;
+        $scope.currentArtistName = SongPlayer.currentArtist;
     };
     /*
     $scope.playPause = function(songIndex) {
@@ -126,7 +127,10 @@ myAppModule.service('SongPlayer', function() {
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        playing: this.playing = true,
+        currentSongTime: 0,
+        playing: false,
+        currentSongName: null,
+        currentArtist: null,
         testPlay: function() {
             this.currentSoundFile = new buzz.sound("http://localhost:3000/assets/music/blue", {
                 formats: [ 'mp3' ],
@@ -157,6 +161,8 @@ myAppModule.service('SongPlayer', function() {
             });
             */
             this.setVolume(this.currentVolume);
+            this.currentSongName = this.currentAlbum.songs[this.currentSongIndex].name;
+            this.currentArtist = this.currentAlbum.artist;
         },
         setVolume: function(volume) {
             if (this.currentSoundFile) {
@@ -191,7 +197,18 @@ myAppModule.service('SongPlayer', function() {
             }
             this.setSong();
             this.play();
-        }
+        },
+        setTime: function() {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.setTime(time);
+            }
+        },
+        trackTime: function() {
+            if (this.currentSoundFile) {
+                this.currentSongTime = this.currentSoundFile.getTime();
+            }
+        },
+        
         
     };
 });
