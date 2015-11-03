@@ -78,7 +78,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         hoveredSongIndex = songIndex;
     };
       
-    $scope.offHover = function() {
+    $scope.offHover = function(songIndex) {
         hoveredSongIndex = null;
     };
     
@@ -86,22 +86,25 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         if (songIndex === SongPlayer.currentSongIndex && SongPlayer.playing) {
             return 'playing';
         } else if (songIndex === hoveredSongIndex || songIndex === SongPlayer.currentSongIndex) {
-            return 'hovered';
+            return 'notplaying';
         }
         return 'default';
     };
     
     
-    $scope.playPause = function(songIndex) {
-        SongPlayer.isPlaying(songIndex);
-        if (songIndex !== SongPlayer.currentSongIndex && SongPlayer.playing) {
-            SongPlayer.setSong(songIndex);
+    $scope.playPause = function(newSongIndex) {
+        if (newSongIndex !== SongPlayer.currentSongIndex && SongPlayer.playing) {
+            SongPlayer.setSong(newSongIndex);
+            SongPlayer.play();
+            //return 'playing';
         } 
         if (SongPlayer.playing) {
             SongPlayer.pause();
+            //return 'paused';
         } else {
             SongPlayer.play();
         }
+        //return 'default';
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
@@ -139,16 +142,11 @@ myAppModule.service('SongPlayer', function() {
             this.currentSoundFile.play();
             this.setVolume(this.currentVolume);
         },    
-        play: function() {
-            this.setSong();
-            this.playing = true;
-            this.paused = false;
-            this.currentSoundFile.play();
-        },
-        setSong: function() {
+        setSong: function(newSongIndex) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
             }
+            var newSongIndex = this.currentSongIndex;
             this.currentSoundFile = new
             buzz.sound(this.currentAlbum.songs[this.currentSongIndex].audioUrl, {
                 formats: [ 'mp3' ],
@@ -163,6 +161,12 @@ myAppModule.service('SongPlayer', function() {
             this.setVolume(this.currentVolume);
             this.currentSongName = this.currentAlbum.songs[this.currentSongIndex].name;
             this.currentArtist = this.currentAlbum.artist;
+        },
+        play: function() {
+            this.setSong(this.currentSongIndex);
+            this.playing = true;
+            this.paused = false;
+            this.currentSoundFile.play();
         },
         setVolume: function(volume) {
             if (this.currentSoundFile) {
@@ -195,7 +199,7 @@ myAppModule.service('SongPlayer', function() {
             if (this.currentSongIndex === this.currentAlbum.songs.length) {
                 this.currentSongIndex = 0;
             }
-            this.setSong();
+            //this.setSong(this.currentSongIndex);
             this.play();
         },
         setTime: function() {
