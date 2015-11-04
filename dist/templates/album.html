@@ -12,15 +12,15 @@
       </section>
 
       <table class="album-view-song-list">
-          <tr class="album-view-song-item" ng-mouseenter="onHover($index)" ng-mouseleave="offHover()" ng-repeat="song in currentAlbum.songs">
-              <td class="song-item-number" ng-click="playPause($index)">
+          <tr class="album-view-song-item" ng-mouseenter="onHover($index)" ng-mouseleave="offHover()" ng-repeat="song in currentAlbum.songs" ng-click="playPause($index)">
+              <td class="song-item-number">
                   <span ng-switch="getSongClass($index)">
-                      <div ng-switch-when="notplaying">
-                        <a class="album-song-button"><span class="ion-play"></span></a>
-                      </div>
-                      <div ng-switch-when="playing">
-                        <a class="album-song-button"><span class="ion-pause" ng-click="playSong()"></span></a>
-                      </div>
+                      <a class="album-song-button" ng-switch-when="notplaying">
+                          <span class="ion-play"></span>
+                      </a>
+                      <a class="album-song-button" ng-switch-when="playing">
+                          <span class="ion-pause"></span>
+                      </a>
                       <span ng-switch-default="">
                           {{ $index + 1 }}
                       </span>
@@ -40,7 +40,7 @@
             <span class = "ion-skip-backward"></span>
           </a>
           <a class = "play-pause" ng-click="playSong()">
-            <span class = "ion-play" ng-hide="!isPaused"</span>
+            <span class = "ion-play" ng-show="isPaused"</span>
             <span class = "ion-pause" ng-show="isPlaying"></span>
           </a>
           <a class = "next" ng-click="nextSong()">

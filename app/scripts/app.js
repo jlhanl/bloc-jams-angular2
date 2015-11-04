@@ -49,6 +49,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongTime = SongPlayer.currentSongTime;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
     
+    
     $scope.isPaused = SongPlayer.isPaused;
     
     $scope.playSong = function() {
@@ -58,6 +59,8 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
             SongPlayer.play();
         }
         $scope.isPlaying = SongPlayer.playing;
+        $scope.currentSongName = SongPlayer.currentSongName;
+        $scope.currentArtistName = SongPlayer.currentArtist;
     };
     
     $scope.pauseSong = function() {
@@ -66,10 +69,16 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     
     $scope.previousSong = function() {
         SongPlayer.previousTrack();
+        $scope.currentSongName = SongPlayer.currentSongName;
+        $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.isPlaying = SongPlayer.playing;
     };
     
     $scope.nextSong = function() {
         SongPlayer.nextTrack();
+        $scope.currentSongName = SongPlayer.currentSongName;
+        $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.isPlaying = SongPlayer.playing;
     };
     
     var hoveredSongIndex = null;
@@ -78,7 +87,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         hoveredSongIndex = songIndex;
     };
       
-    $scope.offHover = function(songIndex) {
+    $scope.offHover = function() {
         hoveredSongIndex = null;
     };
     
@@ -92,35 +101,22 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     };
     
     
-    $scope.playPause = function(newSongIndex) {
-        if (newSongIndex !== SongPlayer.currentSongIndex && SongPlayer.playing) {
-            SongPlayer.setSong(newSongIndex);
+    $scope.playPause = function(songIndex) {
+        if (songIndex !== SongPlayer.currentSongIndex && SongPlayer.playing) {
+            SongPlayer.currentSongIndex = songIndex;
             SongPlayer.play();
-            //return 'playing';
         } 
-        if (SongPlayer.playing) {
+        if (songIndex === SongPlayer.currentSongIndex && SongPlayer.playing) {
             SongPlayer.pause();
-            //return 'paused';
         } else {
+            SongPlayer.currentSongIndex = songIndex;
             SongPlayer.play();
         }
-        //return 'default';
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        
     };
-    /*
-    $scope.playPause = function(songIndex) {
-        SongPlayer.isPlaying(songIndex);
-        if (songIndex !== SongPlayer.currentSongIndex) {
-            SongPlayer.setSong(songIndex);
-        }
-        if (SongPlayer.playing) {
-            SongPlayer.pause();
-        } else {
-            SongPlayer.play();
-        }
-    };*/
 }]);
     
 myAppModule.service('SongPlayer', function() {
@@ -134,14 +130,6 @@ myAppModule.service('SongPlayer', function() {
         playing: false,
         currentSongName: null,
         currentArtist: null,
-        testPlay: function() {
-            this.currentSoundFile = new buzz.sound("http://localhost:3000/assets/music/blue", {
-                formats: [ 'mp3' ],
-                preload: true
-            });
-            this.currentSoundFile.play();
-            this.setVolume(this.currentVolume);
-        },    
         setSong: function(newSongIndex) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
@@ -152,18 +140,12 @@ myAppModule.service('SongPlayer', function() {
                 formats: [ 'mp3' ],
                 preload: true
             });
-            /*
-            buzz.sound(this.currentAlbum.songs[songIndex].audioUrl, {
-                formats: [ 'mp3' ],
-                preload: true
-            });
-            */
             this.setVolume(this.currentVolume);
             this.currentSongName = this.currentAlbum.songs[this.currentSongIndex].name;
             this.currentArtist = this.currentAlbum.artist;
         },
         play: function() {
-            this.setSong(this.currentSongIndex);
+            this.setSong();
             this.playing = true;
             this.paused = false;
             this.currentSoundFile.play();
@@ -187,19 +169,17 @@ myAppModule.service('SongPlayer', function() {
         },
         isPaused: this.pause = true,
         previousTrack: function() {
-            this.currentSongIndex -= 1;
-            if (this.currentSongIndex === 0) {
-                this.currentSongIndex = this.currentAlbum.songs.length;
+            this.currentSongIndex = this.currentSongIndex - 1;
+            if (this.currentSongIndex === -1) {
+                this.currentSongIndex = this.currentAlbum.songs.length - 1;
             }
-            this.setSong();
             this.play();
         },
         nextTrack: function() {
-            this.currentSongIndex += 1;
+            this.currentSongIndex = this.currentSongIndex + 1;
             if (this.currentSongIndex === this.currentAlbum.songs.length) {
                 this.currentSongIndex = 0;
             }
-            //this.setSong(this.currentSongIndex);
             this.play();
         },
         setTime: function() {
