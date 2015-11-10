@@ -206,6 +206,51 @@ myAppModule.service('SongPlayer', function() {
     };
 });
 
+
+myAppModule.directive('qmSellingPoints', function($document, $window) {
+    return {
+        restrict: 'EA',
+        scope: {
+        
+        },
+        templateUrl: 'templates/sellingpoints.html',
+        link: function(scope, element, attributes) {
+            var points = $('.point');
+            var sellingPoints = $('.selling-points');
+            var animatePoints = function(points) {
+
+                angular.element(points).css({
+
+                    opacity: 1,
+
+                    transform: 'scaleX(1) translateY(0)'
+
+                });
+
+            };
+
+            if ($window.height() > 950) {
+                angular.forEach(points, function(point) {
+                    animatePoints(point);
+
+                });
+            }
+            
+            var scrollDistance = angular.element(sellingPoints).offset().top - $window.height() + 200;
+            $window.scroll(function (event) {
+            if ($window.scrollTop() >= scrollDistance) {
+                angular.forEach(points, function (point) {
+                    animatePoints(point);
+
+                });
+            }
+
+            });
+        }
+    }
+});
+
+
 myAppModule.directive('mySlider', function(SongPlayer, $document) {
     return {
         templateUrl: 'templates/myslider.html',
