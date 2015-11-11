@@ -49,6 +49,33 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongTime = SongPlayer.currentSongTime;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
     
+    $scope.$watch('trackProgress', function() {
+        if($scope.trackProgress === undefined) {
+            return;
+        }
+        if (Math.abs(SongPlayer.trackTime() / SongPlayer.getDuration() * 100 - $scope.trackProgress) > 1){
+            SongPlayer.setTime($scope.trackProgress / 100 * SongPlayer.getDuration());
+        }
+    });
+    
+    $scope.updateSeekBarWhileSongPlays = function() {
+        $scope.trackProgress = (SongPlayer.trackTime() / SongPlayer.getDuration()) * 100;
+        if(SongPlayer.trackTime() === SongPlayer.getDuration()) {
+            $scope.nextSong();
+        }
+    };
+    
+    $scope.listener = function() {
+        SongPlayer.registerProgressListener(function(){
+            $scope.$digest();
+            $scope.$apply(function(){
+                $scope.updateTime();
+                $scope.updateDuration();
+                $scope.updateSeekBarWhileSongPlays();
+            })
+        });
+    };
+    $scope.listener();
     
     $scope.isPaused = SongPlayer.isPaused;
     
@@ -175,6 +202,12 @@ myAppModule.service('SongPlayer', function() {
             }
             this.play();
         },
+        registerProgressListener: function(listener) {
+            if (this.currentSoundFile === null) {
+                return null;
+            } 
+                this.currentSoundFile.bind('timeupdate', listener);
+        },
         nextTrack: function() {
             this.currentSongIndex = this.currentSongIndex + 1;
             if (this.currentSongIndex === this.currentAlbum.songs.length) {
@@ -184,14 +217,10 @@ myAppModule.service('SongPlayer', function() {
         },
         setTime: function() {
             if (this.currentSoundFile) {
-                this.currentSoundFile.setTime(time);
+                this.currentSoundFile.setTime(seconds);
             }
         },
-        registerListener: function(fn) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.bind('timeupdate', listener);
-            }
-        },
+        
         getDuration: function() {
             this.currentSoundFile.getDuration();
         },
@@ -207,7 +236,7 @@ myAppModule.service('SongPlayer', function() {
 });
 
 
-myAppModule.directive('qmSellingPoints', function($document, $window) {
+/*myAppModule.directive('qmSellingPoints', function($document, $window) {
     return {
         restrict: 'EA',
         scope: {
@@ -248,7 +277,7 @@ myAppModule.directive('qmSellingPoints', function($document, $window) {
             });
         }
     }
-});
+});*/
 
 
 myAppModule.directive('mySlider', function(SongPlayer, $document) {
@@ -260,41 +289,24 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
             value: '='
         },
         
-        link: function(scope, element, attributes) {    
-            scope.fill = {width: scope.value + "%"};
-            scope.thumb = {left: scope.value + "%"};
+        link: function(scope, element, attributes) {
+
+            scope.setFill = {width: (scope.value || 0) + "%"};
+            scope.setThumb = {left: scope.setFill.width};
             
-            var barLimits = function() {
-                scope.value = Math.max(0, scope.value);
-                scope.value = Math.min(100, scope.value);
-            };
-            var barMove = function(event) {
-                var offsetX = event.pageX - (element[0].getBoundingClientRect.left);
-                var barWidth = element[0].offsetWidth;
-                var seekBarFillRatio = offsetX / barWidth;
-                scope.value = seekBarFillRatio * 100;
-                barLimits();
-            };
-            element.on('mousedown', function(event) {
-                barMove(event);
-                $document.on('mousemove', mousemove);
-                $document.on('mouseup', mouseup);
-            });
-            function mousemove(event) {
-                barMove(event);
-                scope.$apply();
-                barLimits();
-                
-            };
-            function mouseup() {
-                $document.unbind('mousemove', mousemove);
-                barLimits();
-            };
             scope.$watch('value', function() {
                 scope.fill = {width: scope.value + "%"};
                 scope.thumb = {left: scope.value + "%"};
             });
+            
+            scope.barLimits = function() {
+                scope.value = Math.max(0, scope.value);
+                scope.value = Math.min(100, scope.value);
+            };
+            
+
+            
+
         }
     };
 });
-              
