@@ -61,12 +61,53 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongIndex = SongPlayer.currentSongIndex;
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
-    SongPlayer.trackTime();
     $scope.currentSongTime = SongPlayer.currentSongTime;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
-    
-    
     $scope.isPaused = SongPlayer.isPaused;
+    $scope.volume = SongPlayer.getVolume();
+    
+
+    
+    $scope.$watch('volume', function() {
+        SongPlayer.setVolume($scope.volume);
+    });
+    
+    $scope.$watch('progress', function() {
+        if ($scope.progress === undefined) {
+            return undefined;
+        }
+        if (Math.abs(SongPlayer.getTime() / SongPlayer.getDuration() * 100 - $scope.progress) > 1) {
+            SongPlayer.setTime($scope.progress / 100 * SongPlayer.getDuration());
+        }
+    });
+    
+    $scope.updateSeekBarWhileSongPlays = function() {
+        $scope.progress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
+        if(SongPlayer.getTime() === SongPlayer.getDuration()) {
+            $scope.nextSong = function() {
+                SongPlayer.nextTrack();
+                $scope.currentSongName = SongPlayer.currentSongName;
+                $scope.currentArtistName = SongPlayer.currentArtist;
+                $scope.isPlaying = SongPlayer.playing;
+                $scope.listener();
+            }
+        }
+    };
+    $scope.listener = function() {
+        SongPlayer.registerListener(function() {
+            $scope.$digest();
+            $scope.$apply(function() {
+                $scope.time = SongPlayer.getTime();
+                $scope.duration = SongPlayer.getDuration();
+                $scope.updateSeekBarWhileSongPlays();
+            })
+        });
+    };
+    $scope.listener();
+    
+    $scope.time = SongPlayer.getTime();
+    $scope.duration = SongPlayer.getDuration();
+    $scope.updateSeekBarWhileSongPlays();
     
     $scope.playSong = function() {
         if (SongPlayer.playing) {
@@ -77,6 +118,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.listener();
     };
     
     $scope.pauseSong = function() {
@@ -88,6 +130,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
         $scope.isPlaying = SongPlayer.playing;
+        $scope.listener();
     };
     
     $scope.nextSong = function() {
@@ -95,6 +138,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
         $scope.isPlaying = SongPlayer.playing;
+        $scope.listener();
     };
     
     var hoveredSongIndex = null;
@@ -203,16 +247,22 @@ myAppModule.service('SongPlayer', function() {
                 this.currentSoundFile.setTime(time);
             }
         },
-        registerListener: function(fn) {
+        registerListener: function(listener) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.bind('timeupdate', listener);
             }
         },
         getDuration: function() {
-            this.currentSoundFile.getDuration();
+            if (this.currentSoundFile) {
+                this.currentSoundFile.getDuration();
+            }
         },
-        
-        trackTime: function() {
+        getVolume: function() {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.getVolume();
+            }
+        },
+        getTime: function() {
             if (this.currentSoundFile) {
                 this.currentSongTime = this.currentSoundFile.getTime();
             }
@@ -277,7 +327,7 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
                 scope.value = Math.min(100, scope.value);
             };
             var barMove = function(event) {
-                var offsetX = event.pageX - (element[0].getBoundingClientRect.left);
+                var offsetX = event.pageX - (element[0].getBoundingClientRect().left);
                 var barWidth = element[0].offsetWidth;
                 var seekBarFillRatio = offsetX / barWidth;
                 scope.value = seekBarFillRatio * 100;
@@ -288,6 +338,7 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
                 $document.on('mousemove', mousemove);
                 $document.on('mouseup', mouseup);
             });
+            
             function mousemove(event) {
                 barMove(event);
                 scope.$apply();
