@@ -45,39 +45,42 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongIndex = SongPlayer.currentSongIndex;
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
-    SongPlayer.trackTime();
     $scope.currentSongTime = SongPlayer.currentSongTime;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
+    $scope.isPaused = SongPlayer.isPaused;
     
     $scope.$watch('trackProgress', function() {
         if($scope.trackProgress === undefined) {
             return;
         }
-        if (Math.abs(SongPlayer.trackTime() / SongPlayer.getDuration() * 100 - $scope.trackProgress) > 1){
+        if (Math.abs(SongPlayer.getTime() / SongPlayer.getDuration() * 100 - $scope.trackProgress) > 1){
             SongPlayer.setTime($scope.trackProgress / 100 * SongPlayer.getDuration());
         }
     });
     
     $scope.updateSeekBarWhileSongPlays = function() {
-        $scope.trackProgress = (SongPlayer.trackTime() / SongPlayer.getDuration()) * 100;
-        if(SongPlayer.trackTime() === SongPlayer.getDuration()) {
+        $scope.trackProgress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
+        if(SongPlayer.getTime() === SongPlayer.getDuration()) {
             $scope.nextSong();
         }
     };
     
     $scope.listener = function() {
-        SongPlayer.registerProgressListener(function(){
+        SongPlayer.registerProgressListener(function() {  
             $scope.$digest();
             $scope.$apply(function(){
-                $scope.updateTime();
-                $scope.updateDuration();
+                $scope.updateTime = SongPlayer.getTime();
+                $scope.updateDuration = SongPlayer.getDuration();
                 $scope.updateSeekBarWhileSongPlays();
             })
         });
     };
     $scope.listener();
     
-    $scope.isPaused = SongPlayer.isPaused;
+ 
+    $scope.duration = SongPlayer.getDuration();
+    $scope.time = SongPlayer.getTime();
+    $scope.updateSeekBarWhileSongPlays();
     
     $scope.playSong = function() {
         if (SongPlayer.playing) {
@@ -88,6 +91,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.listener();
     };
     
     $scope.pauseSong = function() {
@@ -99,6 +103,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
         $scope.isPlaying = SongPlayer.playing;
+        $scope.listener();
     };
     
     $scope.nextSong = function() {
@@ -106,6 +111,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
         $scope.isPlaying = SongPlayer.playing;
+        $scope.listener();
     };
     
     var hoveredSongIndex = null;
@@ -144,6 +150,8 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.currentArtistName = SongPlayer.currentArtist;
         
     };
+    
+
 }]);
     
 myAppModule.service('SongPlayer', function() {
@@ -222,12 +230,14 @@ myAppModule.service('SongPlayer', function() {
         },
         
         getDuration: function() {
+            if (this.currentSoundFile) {
             this.currentSoundFile.getDuration();
+            }
         },
         
-        trackTime: function() {
+        getTime: function() {
             if (this.currentSoundFile) {
-                this.currentSongTime = this.currentSoundFile.getTime();
+            this.currentSoundFile.getTime();
             }
         },
         
