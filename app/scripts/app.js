@@ -27,6 +27,22 @@ myAppModule.config(function($stateProvider, $locationProvider) {
 
 myAppModule.controller('LandingController', ['$scope', function($scope) {
     $scope.someText = "Turn the music up!";
+        $scope.points = [
+        {
+            icon: 'ion-music-note',
+            title: 'Choose your music',
+            description: 'The world is full of music; why should you have to listen to music that someone else chose?'
+        },
+        {
+            icon: 'ion-radio-waves',
+            title: 'Unlimited, streaming, ad-free',
+            description: 'No arbitrary limits. No distractions.'
+        },
+        {
+            icon: 'ion-iphone',
+            title: 'Mobile enabled',
+            description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
+        }];
 }]);
 
 myAppModule.controller('CollectionController', ['$scope', function($scope) {
@@ -187,6 +203,15 @@ myAppModule.service('SongPlayer', function() {
                 this.currentSoundFile.setTime(time);
             }
         },
+        registerListener: function(fn) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.bind('timeupdate', listener);
+            }
+        },
+        getDuration: function() {
+            this.currentSoundFile.getDuration();
+        },
+        
         trackTime: function() {
             if (this.currentSoundFile) {
                 this.currentSongTime = this.currentSoundFile.getTime();
@@ -196,3 +221,88 @@ myAppModule.service('SongPlayer', function() {
         
     };
 });
+
+myAppModule.directive('qmSellingPoints', function () {
+
+    var linkFunction = function (scope, element, attributes) {
+        var points = $('.point');
+
+        var animatePoints = function (points) {
+            angular.element(points).css({
+                opacity: 1,
+                transform: 'scaleX(1) translateY(0)'
+            });
+        };
+
+
+        if ($(window).height() > 950) {
+            angular.forEach(points, function (point) {
+                animatePoints(point);
+            });
+        }
+
+        var scrollDistance = $('.selling-points').offset().top - $(window).height() + 200;
+
+        $(window).scroll(function (event) {
+            if ($(window).scrollTop() >= scrollDistance) {
+                angular.forEach(points, function (point) {
+                    animatePoints(point);
+                });
+            }
+        });
+    };
+
+    return {
+        restrict: 'EA',
+        link: linkFunction
+    };
+});
+
+
+myAppModule.directive('mySlider', function(SongPlayer, $document) {
+    return {
+        templateUrl: 'templates/myslider.html',
+        replace: true,
+        restrict: 'E',
+        scope: {
+            value: '='
+        },
+        
+        link: function(scope, element, attributes) {    
+            scope.fill = {width: scope.value + "%"};
+            scope.thumb = {left: scope.value + "%"};
+            
+            var barLimits = function() {
+                scope.value = Math.max(0, scope.value);
+                scope.value = Math.min(100, scope.value);
+            };
+            var barMove = function(event) {
+                var offsetX = event.pageX - (element[0].getBoundingClientRect.left);
+                var barWidth = element[0].offsetWidth;
+                var seekBarFillRatio = offsetX / barWidth;
+                scope.value = seekBarFillRatio * 100;
+                barLimits();
+            };
+            element.on('mousedown', function(event) {
+                barMove(event);
+                $document.on('mousemove', mousemove);
+                $document.on('mouseup', mouseup);
+            });
+            function mousemove(event) {
+                barMove(event);
+                scope.$apply();
+                barLimits();
+                
+            };
+            function mouseup() {
+                $document.unbind('mousemove', mousemove);
+                barLimits();
+            };
+            scope.$watch('value', function() {
+                scope.fill = {width: scope.value + "%"};
+                scope.thumb = {left: scope.value + "%"};
+            });
+        }
+    };
+});
+              
