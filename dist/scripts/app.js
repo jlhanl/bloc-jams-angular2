@@ -27,6 +27,22 @@ myAppModule.config(function($stateProvider, $locationProvider) {
 
 myAppModule.controller('LandingController', ['$scope', function($scope) {
     $scope.someText = "Turn the music up!";
+        $scope.points = [
+        {
+            icon: 'ion-music-note',
+            title: 'Choose your music',
+            description: 'The world is full of music; why should you have to listen to music that someone else chose?'
+        },
+        {
+            icon: 'ion-radio-waves',
+            title: 'Unlimited, streaming, ad-free',
+            description: 'No arbitrary limits. No distractions.'
+        },
+        {
+            icon: 'ion-iphone',
+            title: 'Mobile enabled',
+            description: 'Listen to your music on the go. This streaming service is available on all mobile platforms.'
+        }];
 }]);
 
 myAppModule.controller('CollectionController', ['$scope', function($scope) {
@@ -206,48 +222,40 @@ myAppModule.service('SongPlayer', function() {
     };
 });
 
+myAppModule.directive('qmSellingPoints', function () {
 
-myAppModule.directive('qmSellingPoints', function($document, $window) {
-    return {
-        restrict: 'EA',
-        scope: {
-        
-        },
-        templateUrl: 'templates/sellingpoints.html',
-        link: function(scope, element, attributes) {
-            var points = $('.point');
-            var sellingPoints = $('.selling-points');
-            var animatePoints = function(points) {
+    var linkFunction = function (scope, element, attributes) {
+        var points = $('.point');
 
-                angular.element(points).css({
+        var animatePoints = function (points) {
+            angular.element(points).css({
+                opacity: 1,
+                transform: 'scaleX(1) translateY(0)'
+            });
+        };
 
-                    opacity: 1,
 
-                    transform: 'scaleX(1) translateY(0)'
-
-                });
-
-            };
-
-            if ($window.height() > 950) {
-                angular.forEach(points, function(point) {
-                    animatePoints(point);
-
-                });
-            }
-            
-            var scrollDistance = angular.element(sellingPoints).offset().top - $window.height() + 200;
-            $window.scroll(function (event) {
-            if ($window.scrollTop() >= scrollDistance) {
-                angular.forEach(points, function (point) {
-                    animatePoints(point);
-
-                });
-            }
-
+        if ($(window).height() > 950) {
+            angular.forEach(points, function (point) {
+                animatePoints(point);
             });
         }
-    }
+
+        var scrollDistance = $('.selling-points').offset().top - $(window).height() + 200;
+
+        $(window).scroll(function (event) {
+            if ($(window).scrollTop() >= scrollDistance) {
+                angular.forEach(points, function (point) {
+                    animatePoints(point);
+                });
+            }
+        });
+    };
+
+    return {
+        restrict: 'EA',
+        link: linkFunction
+    };
 });
 
 

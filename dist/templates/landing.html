@@ -1,7 +1,15 @@
-<section class="hero-content" ng-controller="LandingController"> <!-- hero content -->
-  <h1 class="hero-title"> {{ someText }}</h1>
+<section class="hero-content">
+    <!-- HERO CONTENT -->
+    <h1 class="hero-title">{{ tagLine }}</h1>
 </section>
-<qm-selling-points></qm-selling-points>
 
-<script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+<section class="selling-points container clearfix">
+    <!-- SELLING POINTS -->
+    <div class="point column third" ng-repeat="point in points" qm-selling-points>
+        <span class='{{ point.icon }}'></span>
+        <h5 class="point-title">{{ point.title }}</h5>
+        <p class="point-description">{{ point.description }}</p>
+    </div>
+</section>
+
 <script src="scripts/landing.js"></script>
