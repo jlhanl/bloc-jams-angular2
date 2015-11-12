@@ -61,8 +61,14 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.updateSeekBarWhileSongPlays = function() {
         $scope.trackProgress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
         if(SongPlayer.getTime() === SongPlayer.getDuration()) {
-            $scope.nextSong();
-        }
+            $scope.nextSong= function() {
+                SongPlayer.nextTrack();
+                $scope.currentSongName = SongPlayer.currentSongName;
+                $scope.currentArtistName = SongPlayer.currentArtist;
+                $scope.isPlaying = SongPlayer.playing;
+                $scope.listener();
+            }
+        };
     };
     
     $scope.listener = function() {
@@ -138,17 +144,19 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         if (songIndex !== SongPlayer.currentSongIndex && SongPlayer.playing) {
             SongPlayer.currentSongIndex = songIndex;
             SongPlayer.play();
+            $scope.listener();
         } 
         if (songIndex === SongPlayer.currentSongIndex && SongPlayer.playing) {
             SongPlayer.pause();
         } else {
             SongPlayer.currentSongIndex = songIndex;
             SongPlayer.play();
+            $scope.listener();
         }
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
-        
+
     };
     
 
@@ -162,7 +170,7 @@ myAppModule.service('SongPlayer', function() {
         currentSongFromAlbum: null,
         currentVolume: 80,
         currentSongTime: 0,
-        playing: false,
+        //playing: false,
         currentSongName: null,
         currentArtist: null,
         setSong: function(newSongIndex) {
@@ -223,7 +231,7 @@ myAppModule.service('SongPlayer', function() {
             }
             this.play();
         },
-        setTime: function() {
+        setTime: function(seconds) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.setTime(seconds);
             }
@@ -310,8 +318,12 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
             });
             
             scope.barLimits = function() {
-                scope.value = Math.max(0, scope.value);
-                scope.value = Math.min(100, scope.value);
+                if (scope.value <= 0) {
+                    scope.value = 0;
+                }
+                else if (scope.value >= 100) {
+                    scope.value = 100;
+                }
             };
             
 
