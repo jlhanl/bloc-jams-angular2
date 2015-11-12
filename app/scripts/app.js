@@ -68,19 +68,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     
 
     
-    $scope.$watch('volume', function() {
-        SongPlayer.setVolume($scope.volume);
-    });
-    
-    $scope.$watch('progress', function() {
-        if ($scope.progress === undefined) {
-            return undefined;
-        }
-        if (Math.abs(SongPlayer.getTime() / SongPlayer.getDuration() * 100 - $scope.progress) > 1) {
-            SongPlayer.setTime($scope.progress / 100 * SongPlayer.getDuration());
-        }
-    });
-    
+
     $scope.updateSeekBarWhileSongPlays = function() {
         $scope.progress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
         if(SongPlayer.getTime() === SongPlayer.getDuration()) {
@@ -108,6 +96,20 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.time = SongPlayer.getTime();
     $scope.duration = SongPlayer.getDuration();
     $scope.updateSeekBarWhileSongPlays();
+    
+        $scope.$watch('volume', function() {
+        SongPlayer.setVolume($scope.volume);
+    });
+    
+    $scope.$watch('progress', function() {
+        if ($scope.progress === undefined) {
+            return undefined;
+        }
+        if (Math.abs(SongPlayer.getTime() / SongPlayer.getDuration() * 100 - $scope.progress) > 1) {
+            SongPlayer.setTime($scope.progress / 100 * SongPlayer.getDuration());
+        }
+    });
+    
     
     $scope.playSong = function() {
         if (SongPlayer.playing) {
@@ -190,6 +192,11 @@ myAppModule.service('SongPlayer', function() {
         playing: false,
         currentSongName: null,
         currentArtist: null,
+        registerListener: function(listener) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.bind('timeupdate', listener);
+            }
+        },
         setSong: function(newSongIndex) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.stop();
@@ -242,16 +249,12 @@ myAppModule.service('SongPlayer', function() {
             }
             this.play();
         },
-        setTime: function() {
+        setTime: function(time) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.setTime(time);
             }
         },
-        registerListener: function(listener) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.bind('timeupdate', listener);
-            }
-        },
+
         getDuration: function() {
             if (this.currentSoundFile) {
                 this.currentSoundFile.getDuration();
@@ -263,9 +266,11 @@ myAppModule.service('SongPlayer', function() {
             }
         },
         getTime: function() {
-            if (this.currentSoundFile) {
-                this.currentSongTime = this.currentSoundFile.getTime();
+            if (this.currentSoundFile === null) {
+                return 0;
             }
+            return this.currentSoundFile.getTime();
+            this.currentSongTime = this.currentSoundFile.getTime();
         },
         
         
@@ -325,14 +330,14 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
             var barLimits = function() {
                 scope.value = Math.max(0, scope.value);
                 scope.value = Math.min(100, scope.value);
-            };
+            }
             var barMove = function(event) {
                 var offsetX = event.pageX - (element[0].getBoundingClientRect().left);
                 var barWidth = element[0].offsetWidth;
                 var seekBarFillRatio = offsetX / barWidth;
                 scope.value = seekBarFillRatio * 100;
                 barLimits();
-            };
+            }
             element.on('mousedown', function(event) {
                 barMove(event);
                 $document.on('mousemove', mousemove);
