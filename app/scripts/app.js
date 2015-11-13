@@ -81,6 +81,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
             }
         }
     };
+    
     $scope.listener = function() {
         SongPlayer.registerListener(function() {
             $scope.$digest();
@@ -91,13 +92,13 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
             })
         });
     };
-    $scope.listener();
+    //$scope.listener();
     
     $scope.time = SongPlayer.getTime();
     $scope.duration = SongPlayer.getDuration();
     $scope.updateSeekBarWhileSongPlays();
     
-        $scope.$watch('volume', function() {
+    $scope.$watch('volume', function() {
         SongPlayer.setVolume($scope.volume);
     });
     
@@ -271,9 +272,7 @@ myAppModule.service('SongPlayer', function() {
             }
             return this.currentSoundFile.getTime();
             this.currentSongTime = this.currentSoundFile.getTime();
-        },
-        
-        
+        },    
     };
 });
 
