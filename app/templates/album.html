@@ -52,14 +52,14 @@
           <h2 class = "artist-song-mobile">{{ currentArtistName }}</h2>
           <h3 class = "artist-name">{{ currentArtistName }}</h3>
           <div class = "seek-control">
-            <my-slider value="volume"></my-slider>
-            <div class = "current-time"></div>
-            <div class = "total-time"></div>
+            <my-slider value="progress"></my-slider>
+            <div class = "current-time">{{ time }}</div>
+            <div class = "total-time">{{ duration }}</div>
           </div>
         </div>
         <div class = "control-group volume">
           <span class = "icon ion-volume-high"</span>
-          <my-slider value="progress"></my-slider>
+          <my-slider value="volume"></my-slider>
         </div>
       </div>
     </section>

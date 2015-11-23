@@ -61,10 +61,9 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongIndex = SongPlayer.currentSongIndex;
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
-    $scope.currentSongTime = SongPlayer.currentSongTime;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
     $scope.isPaused = SongPlayer.isPaused;
-    $scope.volume = SongPlayer.getVolume();
+    $scope.volume = SongPlayer.setVolume();
     
 
     
@@ -188,7 +187,6 @@ myAppModule.service('SongPlayer', function() {
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        currentSongTime: 0,
         playing: false,
         currentSongName: null,
         currentArtist: null,
@@ -216,11 +214,6 @@ myAppModule.service('SongPlayer', function() {
             this.playing = true;
             this.paused = false;
             this.currentSoundFile.play();
-        },
-        setVolume: function(volume) {
-            if (this.currentSoundFile) {
-                this.currentSoundFile.setVolume(volume);
-            }
         },
         pause: function() {
             this.playing = false;
@@ -258,6 +251,11 @@ myAppModule.service('SongPlayer', function() {
         getDuration: function() {
             if (this.currentSoundFile) {
                 this.currentSoundFile.getDuration();
+            }
+        },
+        setVolume: function(volume) {
+            if (this.currentSoundFile) {
+                this.currentSoundFile.setVolume(volume);
             }
         },
         getVolume: function() {
@@ -330,7 +328,8 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
             var barLimits = function() {
                 scope.value = Math.max(0, scope.value);
                 scope.value = Math.min(100, scope.value);
-            }
+            };
+            
             var barMove = function(event) {
                 var offsetX = event.pageX - (element[0].getBoundingClientRect().left);
                 var barWidth = element[0].offsetWidth;
@@ -352,6 +351,7 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
             };
             function mouseup() {
                 $document.unbind('mousemove', mousemove);
+                $document.unbind('mouseup', mouseup);
                 barLimits();
             };
             scope.$watch('value', function() {
