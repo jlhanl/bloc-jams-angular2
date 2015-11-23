@@ -62,7 +62,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSoundFile = SongPlayer.currentSoundFile;
     $scope.isPlaying = SongPlayer.playing;
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
-    $scope.isPaused = SongPlayer.isPaused;
+    //$scope.isPaused = SongPlayer.isPaused;
     $scope.volume = SongPlayer.setVolume();
     
 
@@ -227,7 +227,7 @@ myAppModule.service('SongPlayer', function() {
                 this.playing = false;
             }
         },
-        isPaused: this.pause = true,
+        //isPaused: this.pause = true,
         previousTrack: function() {
             this.currentSongIndex = this.currentSongIndex - 1;
             if (this.currentSongIndex === -1) {
@@ -359,6 +359,23 @@ myAppModule.directive('mySlider', function(SongPlayer, $document) {
                 scope.thumb = {left: scope.value + "%"};
             });
         }
+    };
+});
+
+myAppModule.filter('filterTime', function() {
+    return function(timeInSeconds) {
+        var time = parseFloat(timeInSeconds);
+        if (isNaN(time)) {
+            return '0:00';
+        }
+        var wholeMin = Math.floor(time / 60);
+        var wholeSec = Math.floor(time - wholeMin * 60);
+        if (wholeSec >= 10) {
+            var formatTime = wholeMin + ":" + wholeSec;
+        } else {
+            var formatTime = wholeMin + ":0" + wholeSec;
+        }
+        return formatTime;
     };
 });
               

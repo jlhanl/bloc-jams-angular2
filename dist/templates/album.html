@@ -27,7 +27,7 @@
                   </span>       
               </td>
               <td class="song-item-title">{{ song.name }}</td>
-              <td class="song-item-duration">{{ song.length | date:'mm:ss' }}</td>
+              <td class="song-item-duration">{{ song.length | filterTime }}</td>
           </tr>
 
       </table>
@@ -40,7 +40,7 @@
             <span class = "ion-skip-backward"></span>
           </a>
           <a class = "play-pause" ng-click="playSong()">
-            <span class = "ion-play" ng-show="isPaused"</span>
+            <span class = "ion-play" ng-show="isPaused" ng-hide="isPlaying"</span>
             <span class = "ion-pause" ng-show="isPlaying"></span>
           </a>
           <a class = "next" ng-click="nextSong()">
@@ -53,8 +53,8 @@
           <h3 class = "artist-name">{{ currentArtistName }}</h3>
           <div class = "seek-control">
             <my-slider value="progress"></my-slider>
-            <div class = "current-time">{{ time }}</div>
-            <div class = "total-time">{{ duration }}</div>
+            <div class = "current-time">{{ time | filterTime}}</div>
+            <div class = "total-time">{{ duration | filterTime }}</div>
           </div>
         </div>
         <div class = "control-group volume">
