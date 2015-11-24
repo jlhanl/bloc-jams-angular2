@@ -64,7 +64,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     $scope.currentSongFromAlbum = $scope.currentAlbum.songs[$scope.currentSongIndex];
     //$scope.isPaused = SongPlayer.isPaused;
     $scope.volume = SongPlayer.setVolume();
-    
+    $scope.currentSongDuration = SongPlayer.currentSongDuration;
 
     
 
@@ -75,6 +75,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
                 SongPlayer.nextTrack();
                 $scope.currentSongName = SongPlayer.currentSongName;
                 $scope.currentArtistName = SongPlayer.currentArtist;
+                $scope.currentSongDuration = SongPlayer.currentSongDuration;
                 $scope.isPlaying = SongPlayer.playing;
                 $scope.listener();
             }
@@ -119,6 +120,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.currentSongDuration = SongPlayer.currentSongDuration;
         $scope.listener();
     };
     
@@ -130,6 +132,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         SongPlayer.previousTrack();
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.currentSongDuration = SongPlayer.currentSongDuration;
         $scope.isPlaying = SongPlayer.playing;
         $scope.listener();
     };
@@ -138,6 +141,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         SongPlayer.nextTrack();
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.currentSongDuration = SongPlayer.currentSongDuration;
         $scope.isPlaying = SongPlayer.playing;
         $scope.listener();
     };
@@ -176,6 +180,8 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         $scope.isPlaying = SongPlayer.playing;
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
+        $scope.currentSongDuration = SongPlayer.currentSongDuration;
+        $scope.listener();
         
     };
 }]);
@@ -187,9 +193,10 @@ myAppModule.service('SongPlayer', function() {
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        playing: false,
+        playing: null,
         currentSongName: null,
         currentArtist: null,
+        currentSongDuration: null,
         registerListener: function(listener) {
             if (this.currentSoundFile) {
                 this.currentSoundFile.bind('timeupdate', listener);
@@ -208,6 +215,7 @@ myAppModule.service('SongPlayer', function() {
             this.setVolume(this.currentVolume);
             this.currentSongName = this.currentAlbum.songs[this.currentSongIndex].name;
             this.currentArtist = this.currentAlbum.artist;
+            this.currentSongDuration = this.currentAlbum.songs[this.currentSongIndex].length;
         },
         play: function() {
             this.setSong();
@@ -220,14 +228,14 @@ myAppModule.service('SongPlayer', function() {
             this.paused = true;
             this.currentSoundFile.pause();
         },
-        isPlaying: function() {
-            if (this.paused = false) {
-                this.playing = true;
-            } else {
-                this.playing = false;
-            }
-        },
-        //isPaused: this.pause = true,
+        //isPlaying: function() {
+        //    if (this.paused = false) {
+          //      this.playing = true;
+            //} else {
+              //  this.playing = false;
+            //}
+        //},
+        isPaused: this.pause = true,
         previousTrack: function() {
             this.currentSongIndex = this.currentSongIndex - 1;
             if (this.currentSongIndex === -1) {
