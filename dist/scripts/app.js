@@ -102,10 +102,9 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     });
     
     $scope.$watch('progress', function() {
-        if ($scope.progress === undefined) {
-            return undefined;
-        }
-        if (Math.abs(SongPlayer.getTime() / SongPlayer.getDuration() * 100 - $scope.progress) > 1) {
+        var songProgress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
+        console.log(songProgress);
+        if (Math.abs($scope.progress - songProgress) > 1) {
             SongPlayer.setTime($scope.progress / 100 * SongPlayer.getDuration());
         }
     });
@@ -258,7 +257,9 @@ myAppModule.service('SongPlayer', function() {
 
         getDuration: function() {
             if (this.currentSoundFile) {
-                this.currentSoundFile.getDuration();
+            return this.currentSoundFile.getDuration();
+            } else if (this.currentSoundFile == null) {
+                return null;
             }
         },
         setVolume: function(volume) {
