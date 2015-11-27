@@ -103,7 +103,6 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
     
     $scope.$watch('progress', function() {
         var songProgress = (SongPlayer.getTime() / SongPlayer.getDuration()) * 100;
-        console.log(songProgress);
         if (Math.abs($scope.progress - songProgress) > 1) {
             SongPlayer.setTime($scope.progress / 100 * SongPlayer.getDuration());
         }
@@ -116,7 +115,7 @@ myAppModule.controller('AlbumController', ['$scope', 'SongPlayer', function($sco
         } else {
             SongPlayer.play();
         }
-        $scope.isPlaying = SongPlayer.playing;
+        $scope.isPlaying = SongPlayer.playing; //isPlaying should be true, which would cause the pause icon to appear with ng-show = "isPlaying".
         $scope.currentSongName = SongPlayer.currentSongName;
         $scope.currentArtistName = SongPlayer.currentArtist;
         $scope.currentSongDuration = SongPlayer.currentSongDuration;
@@ -192,7 +191,7 @@ myAppModule.service('SongPlayer', function() {
         currentSoundFile: null,
         currentSongFromAlbum: null,
         currentVolume: 80,
-        playing: null,
+        playing: null, //should change to true when song plays.
         currentSongName: null,
         currentArtist: null,
         currentSongDuration: null,
@@ -218,22 +217,16 @@ myAppModule.service('SongPlayer', function() {
         },
         play: function() {
             this.setSong();
-            this.playing = true;
+            this.playing = true; //should switch $scope.isPlaying to true.
             this.paused = false;
             this.currentSoundFile.play();
+            console.log(this.playing);
         },
         pause: function() {
             this.playing = false;
             this.paused = true;
             this.currentSoundFile.pause();
         },
-        //isPlaying: function() {
-        //    if (this.paused = false) {
-          //      this.playing = true;
-            //} else {
-              //  this.playing = false;
-            //}
-        //},
         isPaused: this.pause = true,
         previousTrack: function() {
             this.currentSongIndex = this.currentSongIndex - 1;

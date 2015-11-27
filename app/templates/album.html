@@ -41,7 +41,7 @@
           </a>
           <a class = "play-pause" ng-click="playSong()">
             <span class = "ion-play" ng-show="isPaused" ng-hide="isPlaying"</span>
-            <span class = "ion-pause" ng-show="isPlaying"></span>
+            <span class = "ion-pause" ng-show="isPlaying"></span><!-- PAUSE ICON NOT APPEARING. Play a song. Pause icon should appear when SongPlayer.playing == true - which also means $scope.isPlaying == true. See comments in app.js albumController and SongPlayer. -->
           </a>
           <a class = "next" ng-click="nextSong()">
             <span class = "ion-skip-forward"></span>
